@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<td>
+    <div class="inputfield" style="margin-left: 10px;">
+        <img  id="captcha_image" />
+        <img  src="../../images/reload.jpg" onclick="reloadCaptcha()" style="cursor: pointer;" alt="reload"width="30" height="30"/>
+    </div>
+</td>
+<td>
+    <audio controls autoplay  id="captcha_audio" autoplay = "false"></audio>
+</td>
+</body>
+</html>
+
+<script>
+    $(document).ready(function(){
+        reloadCaptcha();
+    });
+    function reloadCaptcha(){
+        var d = new Date();
+        $.ajax({
+            url:"captcha.jsp",
+            type :"POST",
+            async:true,
+            data: {
+                'action':  'generateCaptcha' ,
+            },
+            success:function(response){
+                $("#captcha_image").attr("src", "../../simpleCaptcha.png?"+d.getTime());
+                $("#captcha_audio").attr("src", "../../audio.wav?"+d.getTime());
+
+            },
+        });
+
+    }

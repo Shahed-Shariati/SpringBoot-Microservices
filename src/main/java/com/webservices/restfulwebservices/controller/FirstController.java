@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -64,21 +66,20 @@ public class FirstController {
         return captcha.getAnswer();
     }
     @GetMapping(path = "/captcha-audio")
-    public String captchaAudioGenerate(HttpServletResponse response){
+    public void captchaAudioGenerate(HttpServletResponse response){
         AudioCaptcha ac = new AudioCaptcha.Builder()
-           .addAnswer(new MyTextProducer())
-
+           .addAnswer(/*new MyTextProducer()*/)
            .build(); // Required
-
-
+//        AudioFormat outDataFormat = new AudioFormat((float) 11025.0, (int) 16, (int) 1, true, false);
+//        AudioInputStream lowResAIS = AudioSystem.getAudioInputStream(outDataFormat, ac.getChallenge().getAudioInputStream());
+//        CaptchaServletUtil.writeAudio(response,ac.getChallenge());
         writeAudio(response,ac.getChallenge());
-        return ac.getAnswer();
+//        return ac.getAnswer();
     }
 
     private  void writeAudio(HttpServletResponse response, Sample sample) {
         response.setHeader("Cache-Control", "private,no-cache,no-store");
         response.setContentType("audio/x-wav");
-
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
             AudioSystem.write(sample.getAudioInputStream(), AudioFileFormat.Type.WAVE, baos);
