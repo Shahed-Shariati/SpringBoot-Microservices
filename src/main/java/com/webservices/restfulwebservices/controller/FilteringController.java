@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.webservices.restfulwebservices.model.SomeBean;
+import nl.captcha.audio.AudioCaptcha;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,6 +45,7 @@ public class FilteringController {
 
     @GetMapping("/filtering-list-dyn")
     public MappingJacksonValue filteringListDynamic() {
+
         List<SomeBean> list = Arrays.asList(new SomeBean("1", "2", "3")
                 , new SomeBean("4", "5", "6"));
         MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(list);
