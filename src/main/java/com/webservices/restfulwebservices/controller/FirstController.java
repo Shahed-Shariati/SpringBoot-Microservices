@@ -2,14 +2,22 @@ package com.webservices.restfulwebservices.controller;
 
 import com.webservices.restfulwebservices.model.HelloBean;
 import com.webservices.restfulwebservices.producer.MyTextProducer;
+import jakarta.servlet.http.HttpServletResponse;
 import nl.captcha.Captcha;
 import nl.captcha.audio.AudioCaptcha;
+import nl.captcha.audio.Sample;
+import nl.captcha.servlet.CaptchaServletUtil;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioSystem;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Locale;
 
 @RestController
@@ -56,12 +64,33 @@ public class FirstController {
         return captcha.getAnswer();
     }
     @GetMapping(path = "/captcha-audio")
-    public String captchaAudioGenerate(){
+    public String captchaAudioGenerate(HttpServletResponse response){
         AudioCaptcha ac = new AudioCaptcha.Builder()
            .addAnswer(new MyTextProducer())
 
            .build(); // Required
+
+
+        writeAudio(response,ac.getChallenge());
         return ac.getAnswer();
+    }
+
+    private  void writeAudio(HttpServletResponse response, Sample sample) {
+        response.setHeader("Cache-Control", "private,no-cache,no-store");
+        response.setContentType("audio/x-wav");
+
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+            AudioSystem.write(sample.getAudioInputStream(), AudioFileFormat.Type.WAVE, baos);
+            response.setContentLength(baos.size());
+            OutputStream os = response.getOutputStream();
+            os.write(baos.toByteArray());
+            os.flush();
+            os.close();
+        } catch (IOException var4) {
+            var4.printStackTrace();
+        }
+
     }
 
 
